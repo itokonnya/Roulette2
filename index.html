@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.ico">
+  <title>ルーレット</title>
+</head>
+<body>
+  <div class="grid">
+    <canvas id="rouletteCanvas" width="400" height="400"></canvas>
+    <div id="pointer"></div>
+    <button id="startButton" class="button" disabled>start</button>
+    <button id="stopButton" class="button" disabled>stop</button>
+    <div id="resultDisplay"></div>
+    <div id="dropZone">CSVをドラッグ&ドロップ</div>
+  </div>
+  <script src="main.js"></script>
+</body>
+</html>

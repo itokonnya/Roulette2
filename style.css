@@ -1,0 +1,100 @@
+@charset "utf-8";
+
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+  font-weight: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  text-decoration: none;
+  vertical-align: baseline;
+  outline: 0;
+}
+
+html {
+	background-color: #322d32;
+	color: #fbfbff;
+	font-weight: 300;
+	font-size: 16px;
+	font-family: 'Josefin Sans', sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+}
+
+.grid {
+  width: 420px;
+  display: grid;
+  place-content: center;
+  place-items: center;
+  grid-auto-columns: 20px;
+  grid-auto-rows: 20px;
+}
+
+#rouletteCanvas {
+  border-radius: 50%;
+  background-color: #fbfbff;
+  grid-column: 1 / 21;
+  grid-row: 2 / 22;
+}
+
+#pointer {
+  height: 20px;
+  width: calc(tan(60deg) * 20px / 2);
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+  background: #b44f4f;
+  grid-column: 21 / 22;
+  grid-row: 2 / 22;
+}
+
+.button {
+  font-size: 24px;
+  background-color: #fbfbff;
+  color: #322d32;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button:disabled {
+  background-color: #453f4b;
+  color: #5d5f60;
+}
+
+#startButton {
+  height: 40px;
+  width: 160px;
+  grid-column: 1 / 11;
+  grid-row: 23 / 25;
+}
+
+#stopButton {
+  height: 40px;
+  width: 160px;
+  grid-column: 11 / 21;
+  grid-row: 23 / 25;
+}
+
+#resultDisplay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-column: 1 / 21;
+  grid-row: 26 / 28;
+}
+
+#dropZone {
+  height: 80px;
+  width: 360px;
+  color: #5d5f60;
+  border: 2px dashed #5d5f60;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-column: 2 / 20;
+  grid-row: 29 / 33;
+}
