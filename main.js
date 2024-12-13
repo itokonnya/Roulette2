@@ -103,6 +103,7 @@ function CSVReader() {
     alert("CSVファイルをドラッグ＆ドロップしてください。");
     return;
   }
+  items = [];
   const reader = new FileReader();
 
   // ファイルの読み取り
