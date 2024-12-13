@@ -29,7 +29,7 @@ function drawRoulette(startAngle, startButtonDisabled, stopButtonDisabled, resul
     ctx.rotate(angle + arcSize / 2);
     ctx.textAlign = "right";
     ctx.fillStyle = "#322d32";
-    ctx.font = "16px Arial";
+    ctx.font = "12px Arial";
     ctx.fillText(item.name, radius - 10, 10);
 
     ctx.restore();
