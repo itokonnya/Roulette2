@@ -9,7 +9,7 @@ let items = [];
 
 
 // ルーレット描画関数
-function drawRoulette(startAngle, startButtonDisabled, stopButtonDisabled, resultDisplayText) {
+function drawRoulette(startAngle, startButtonDisabled, stopButtonDisabled, dropZonePointerEvents, resultDisplayText) {
   const radius = canvas.width / 2;
   const arcSize = (2 * Math.PI) / items.length;
 
@@ -30,13 +30,17 @@ function drawRoulette(startAngle, startButtonDisabled, stopButtonDisabled, resul
     ctx.textAlign = "right";
     ctx.fillStyle = "#322d32";
     ctx.font = "12px Arial";
-    ctx.fillText(item.name, radius - 10, 10);
+    ctx.fillText(item.name, radius - 6, 6);
+    ctx.textBaseline = "middle";
+
+
 
     ctx.restore();
   });
 
   startButton.disabled = startButtonDisabled;
   stopButton.disabled = stopButtonDisabled;
+  dropZone.style.pointerEvents = dropZonePointerEvents;
   resultDisplay.textContent = resultDisplayText;
 }
 
@@ -56,7 +60,7 @@ function spinRoulette(stopSpin, startAngle, spinSpeed, decrement, minSpeed, spin
     const selectedIndex = Math.floor(((startAngle % (2 * Math.PI)) / (2 * Math.PI)) * items.length);
     const winner = items[(items.length - 1 - selectedIndex + items.length) % items.length].name;
     
-    drawRoulette(startAngle, false, true, `${winner}さんコメントお願いします！`);
+    drawRoulette(startAngle, false, true, "auto", `${winner}さんコメントお願いします！`);
     return;
   }
 
@@ -70,7 +74,7 @@ function spinRoulette(stopSpin, startAngle, spinSpeed, decrement, minSpeed, spin
   }
 
   startAngle += spinSpeed;
-  drawRoulette(startAngle, true, false, "");
+  drawRoulette(startAngle, true, false, "none", "");
   spinTimeout = requestAnimationFrame(() => 
     spinRoulette(stopSpin, startAngle, spinSpeed, decrement, minSpeed, spinTimeout));
 }
@@ -78,11 +82,19 @@ function spinRoulette(stopSpin, startAngle, spinSpeed, decrement, minSpeed, spin
 
 
 // ドラッグ＆ドロップイベント
+window.addEventListener("dragover", (event) => {
+  event.preventDefault();
+});
+
+window.addEventListener("drop", (event) => {
+  event.preventDefault();
+});
+
 dropZone.addEventListener("drop", (event) => {
   event.preventDefault();
   dropZone.style.borderColor = "";
 
-  CSVReader();
+  CSVReader(event);
 });
 
 dropZone.addEventListener("dragover", (event) => {
@@ -97,7 +109,7 @@ dropZone.addEventListener("dragleave", () => {
 
 
 // CSVの読み取り
-function CSVReader() {
+function CSVReader(event) {
   const file = event.dataTransfer.files[0];
   if (file && file.type !== "text/csv") {
     alert("CSVファイルをドラッグ＆ドロップしてください。");
@@ -121,7 +133,7 @@ function CSVReader() {
       }
     });
   
-    drawRoulette(0, false, true, "");
+    drawRoulette(0, false, true, "auto", "");
   };
   
   reader.readAsText(file);
