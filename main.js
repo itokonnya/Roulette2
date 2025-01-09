@@ -29,7 +29,7 @@ function drawRoulette(startAngle, startButtonDisabled, stopButtonDisabled, dropZ
     ctx.rotate(angle + arcSize / 2);
     ctx.textAlign = "right";
     ctx.fillStyle = "#322d32";
-    ctx.font = "12px Arial";
+    ctx.font = "16px Arial";
     ctx.fillText(item.name, radius - 6, 6);
     ctx.textBaseline = "middle";
 
@@ -112,35 +112,35 @@ dropZone.addEventListener("dragleave", () => {
 function CSVReader(event) {
   const file = event.dataTransfer.files[0];
   if (!file || (file.type !== "text/csv" && file.type !== "application/vnd.ms-excel")) {
-    alert("CSV/TSVファイルをドラッグ＆ドロップしてください。");
+    alert("CSVファイルをドラッグ＆ドロップしてください。");
     return;
   }
 
+  items = [];
   const reader = new FileReader();
 
   // ファイルの読み取り
   reader.onload = (e) => {
-    const content = e.target.result;
-    const rows = content
-      .replace(/\r\n/g, "\n") // Normalize line endings
-      .split("\n") // Split into lines
-      .map((line) => line.trim()) // Trim whitespace
-      .filter((line) => line); // Exclude empty lines
+    const csvRows = e.target.result
+      .replace(/\r\n/g, "\n") // 改行コードを統一
+      .split("\n") // 行ごとに分割
+      .map((line) => line.trim()) // 空白を削除
+      .filter((line) => line && !line.startsWith("#")); // 空行と#で始まる行を除外
 
-    const header = rows.shift(); // Remove the header row
+    const header = csvRows.shift(); // ヘッダー行を削除
 
     if (!header.includes("氏名") || !header.includes("ユーザーの操作")) {
-      alert("正しいフォーマットのCSV/TSVファイルを使用してください。");
+      alert("正しいフォーマットのCSVファイルを使用してください。");
       return;
     }
 
-    const userActions = {}; // Store counts of actions for each user
+    const userActions = {}; // 各氏名の操作回数を記録
 
-    rows.forEach((row) => {
-      const [name, action] = row.split(/\t|,/); // Split by tab or comma
+    csvRows.forEach((row) => {
+      const [name, action] = row.split(/,|\t/); // カンマまたはタブで分割
       if (!name || !action) return;
 
-      const cleanName = name.split(" （")[0]; // Extract name before "（"
+      const cleanName = name.split(" (")[0]; // 「（」の前の名前を抽出
       if (!userActions[cleanName]) {
         userActions[cleanName] = { joined: 0, left: 0 };
       }
@@ -149,20 +149,17 @@ function CSVReader(event) {
       if (action === "退出") userActions[cleanName].left += 1;
     });
 
-    // Filter users where "参加済み" and "退出" counts do not match
-    const filteredNames = Object.keys(userActions).filter(
-      (name) => userActions[name].joined !== 0 && userActions[name].joined !== userActions[name].left
-    );
+    // 条件を満たす氏名をitemsに追加
+    items = Object.keys(userActions)
+      .filter((name) => userActions[name].joined !== userActions[name].left) // 参加済みと退出の数が異なる場合
+      .map((name) => ({ name: name, color: getRandomColor() })); // 名前とランダム色を格納
 
-    console.log("Filtered Names:", filteredNames);
-
-    // Do something with the filtered names, e.g., display them or process further
-    alert("Filtered Names: " + filteredNames.join(", "));
+    // 更新されたitemsでルーレット描画
+    drawRoulette(0, false, true, "auto", "");
   };
 
-  reader.readAsText(file, "utf-16"); // Read file with appropriate encoding
+  reader.readAsText(file, "utf-8");
 }
-
 
 
 
