@@ -121,11 +121,11 @@ function CSVReader(event) {
 
   // ファイルの読み取り
   reader.onload = (e) => {
+
     const csvRows = e.target.result
       .replace(/\r\n/g, "\n") // 改行コードを統一
       .split("\n") // 行ごとに分割
       .map((line) => line.trim()) // 空白を削除
-      .filter((line) => line && !line.startsWith("#")); // 空行と#で始まる行を除外
 
     const header = csvRows.shift(); // ヘッダー行を削除
 
@@ -135,12 +135,29 @@ function CSVReader(event) {
     }
 
     const userActions = {}; // 各氏名の操作回数を記録
+    const excludedNames = []; // 除外された名前を記録するリスト
 
     csvRows.forEach((row) => {
       const [name, action] = row.split(/,|\t/); // カンマまたはタブで分割
       if (!name || !action) return;
 
       const cleanName = name.split(" (")[0]; // 「（」の前の名前を抽出
+
+      if (excludedNames.includes(cleanName)) return;
+
+      // 「除外」の処理
+      if (action === "除外") {
+        // 除外リストに追加（重複を避ける）
+        if (!excludedNames.includes(cleanName)) {
+          excludedNames.push(cleanName);
+        }
+        // すでに存在する場合は削除
+        if (userActions[cleanName]) {
+          delete userActions[cleanName];
+        }
+        return;
+      }
+
       if (!userActions[cleanName]) {
         userActions[cleanName] = { joined: 0, left: 0 };
       }
