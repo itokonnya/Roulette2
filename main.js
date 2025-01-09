@@ -111,33 +111,58 @@ dropZone.addEventListener("dragleave", () => {
 // CSVの読み取り
 function CSVReader(event) {
   const file = event.dataTransfer.files[0];
-  if (file && file.type !== "text/csv") {
-    alert("CSVファイルをドラッグ＆ドロップしてください。");
+  if (!file || (file.type !== "text/csv" && file.type !== "application/vnd.ms-excel")) {
+    alert("CSV/TSVファイルをドラッグ＆ドロップしてください。");
     return;
   }
-  items = [];
+
   const reader = new FileReader();
 
   // ファイルの読み取り
   reader.onload = (e) => {
-    const csvItems = e.target.result
-      .replace(/\r\n/g, "\n") // 改行コードを統一
-      .split("\n") // 行ごとに分割
-      .map((line) => line.trim()) // 空白を削除
-      .filter((line) => line && !line.startsWith("#")); // 空行と#で始まる行を除外
+    const content = e.target.result;
+    const rows = content
+      .replace(/\r\n/g, "\n") // Normalize line endings
+      .split("\n") // Split into lines
+      .map((line) => line.trim()) // Trim whitespace
+      .filter((line) => line); // Exclude empty lines
 
-    // アイテムと色を追加
-    csvItems.forEach((item) => {
-      if (!items.includes(item)) {
-        items.push({name : item, color : getRandomColor()});
+    const header = rows.shift(); // Remove the header row
+
+    if (!header.includes("氏名") || !header.includes("ユーザーの操作")) {
+      alert("正しいフォーマットのCSV/TSVファイルを使用してください。");
+      return;
+    }
+
+    const userActions = {}; // Store counts of actions for each user
+
+    rows.forEach((row) => {
+      const [name, action] = row.split(/\t|,/); // Split by tab or comma
+      if (!name || !action) return;
+
+      const cleanName = name.split(" （")[0]; // Extract name before "（"
+      if (!userActions[cleanName]) {
+        userActions[cleanName] = { joined: 0, left: 0 };
       }
+
+      if (action === "参加済み") userActions[cleanName].joined += 1;
+      if (action === "退出") userActions[cleanName].left += 1;
     });
-  
-    drawRoulette(0, false, true, "auto", "");
+
+    // Filter users where "参加済み" and "退出" counts do not match
+    const filteredNames = Object.keys(userActions).filter(
+      (name) => userActions[name].joined !== 0 && userActions[name].joined !== userActions[name].left
+    );
+
+    console.log("Filtered Names:", filteredNames);
+
+    // Do something with the filtered names, e.g., display them or process further
+    alert("Filtered Names: " + filteredNames.join(", "));
   };
-  
-  reader.readAsText(file);
+
+  reader.readAsText(file, "utf-16"); // Read file with appropriate encoding
 }
+
 
 
 
